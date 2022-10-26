@@ -9,8 +9,8 @@ void writeOnFich(FILE *f_entree)
     int octet=0;
     char *tab = malloc(16*sizeof(char));
     int nbSpace=0;
-    //définir la taille du fichier
     if (f_entree == stdin) {
+        // TODO: read from stdin and write to stdout when octet%16 == 0
         printf("TODO: stdin xxd");
     }else {
         while ((c = fgetc(f_entree)) != EOF) {
