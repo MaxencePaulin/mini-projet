@@ -16,9 +16,9 @@ void writeOnFich(FILE *f_entree)
         while ((c = fgetc(f_entree)) != EOF) {
             if ((c2 = fgetc(f_entree)) != EOF) {
                 if (octet == 0) {
-                    fprintf(stdout, "%08x: ", 0);
+                    fprintf(stdout, "%08x:", 0);
                 }
-                fprintf(stdout, "%02x%02x ", c, c2);
+                fprintf(stdout, " %02x%02x", c, c2);
                 if (isprint(c) != 0) {
                     tab[octet%16] = c;
                 }else {
@@ -31,8 +31,8 @@ void writeOnFich(FILE *f_entree)
                 }
                 octet=octet+2;
                 if (octet%16 == 0) {
-                    fprintf(stdout, " %s", tab);
-                    fprintf(stdout, "\n%08x: ", octet);
+                    fprintf(stdout, "  %s", tab);
+                    fprintf(stdout, "\n%08x:", octet);
                 }
                 if (tab[15] != '\0') {
                     for (int i=0; i<=15; i++){
@@ -40,18 +40,33 @@ void writeOnFich(FILE *f_entree)
                     } 
                 }
             }else {
-                nbSpace = 16 - (octet%16);
-                fprintf(stdout, "%02x   ", c);
-                for (int i=0; i<=nbSpace; i++) {
-                    fprintf(stdout, "  ");
+                fprintf(stdout, " %02x ", c);
+                octet++;
+                nbSpace = 40-(((octet%16)*2)+((octet%16)/2));
+                fprintf(stdout, "%d", nbSpace);
+                for (int i=0; i<nbSpace; i++) {
+                    fprintf(stdout, " ");
                 }
                 if (isprint(c) != 0) {
                     tab[octet%16] = c;
                 }else {
                     tab[octet%16] = '.';
                 }
-                fprintf(stdout, " %s", tab);
+                fprintf(stdout, " \n%s", tab);
+                fprintf(stdout, "  %s", tab);
+                for (int i=0; i<=15; i++){
+                    tab[i] = '\0';
+                }
             }
+        }
+        if((c=fgetc(f_entree)) == EOF && (tab[0] != '\0')) {
+            fprintf(stdout, "test2");
+                    
+            nbSpace = 40-(((octet%16)*2)+((octet%16)/2));
+            for (int i=0; i<nbSpace; i++) {
+                fprintf(stdout, " ");
+            }
+            fprintf(stdout, "  %s", tab);
         }
     }
     fprintf(stdout, "\n");
