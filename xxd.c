@@ -8,37 +8,34 @@ void writeOnFich(FILE *f_entree, FILE *f_sortie)
     {
         fputc(c, f_sortie);
     }
+    fputc('\n', f_sortie);
 }
 
 int main(int argc, char *argv[])
 {
-    FILE *f_entree, *f_sortie;
-    if (argc != 3)
+    FILE *f_entree;
+    // copie d'un fichier sur la sortie standart
+    if (argc == 1)
     {
-        printf("Usage: %s <fichier_entree> <fichier_sortie>\n", argv[0]);
-        return -1;
+        writeOnFich(stdin, stdout);
     }
-    f_entree = fopen(argv[1], "r");
-    if (f_entree == NULL)
+    else
     {
-        perror("error fopen 1");
-        return -1;
-    }
-    f_sortie = fopen(argv[2], "w");
-    if (f_sortie == NULL)
-    {
-        perror("error fopen 2");
-        return -1;
-    }
-    writeOnFich(f_entree, f_sortie);
-    if (fclose(f_entree) != 0)
-    {
-        perror("error fclose 1");
-        return -1;
-    }
-    if (fclose(f_sortie) != 0) {
-        perror("error fclose 2");
-        return -1;
+        for (int i = 1; i < argc; i++)
+        {
+            f_entree = fopen(argv[i], "r");
+            if (f_entree == NULL)
+            {
+                perror("erreur fopen");
+                return -1;
+            }
+            writeOnFich(f_entree, stdout);
+            if (fclose(f_entree) != 0)
+            {
+                perror("erreur fclose");
+                return -1;
+            }
+        }
     }
     return 0;
 }
