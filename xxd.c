@@ -10,16 +10,18 @@ void writeOnFich(FILE *f_entree)
     int octet=0;
     int nbSpace=0;
     char *tab = malloc(16*sizeof(char));
-    bool endLine=true;
+    bool startLine=true;
     if (f_entree == stdin) {
         // TODO: read from stdin and write to stdout when octet%16 == 0
         printf("TODO: stdin xxd\n");
     }else {
         while ((c = fgetc(f_entree)) != EOF) {
-            if (endLine == true) {
+            // if we are at the beginning of a line
+            if (startLine == true) {
                 fprintf(stdout, "%08x:", octet);
             }
-            endLine=false;
+            startLine=false;
+            // if we have 2 char possible
             if ((c2 = fgetc(f_entree)) != EOF) {
 
                 fprintf(stdout, " %02x%02x", c, c2);
@@ -36,17 +38,17 @@ void writeOnFich(FILE *f_entree)
                 octet=octet+2;
                 if (octet%16 == 0) {
                     fprintf(stdout, "  %s\n", tab);
-                    endLine = true;
+                    startLine = true;
                 }
                 if (tab[15] != 0) {
                     for (int i=0; i<=15; i++){
                         tab[i] = 0;
-                    } 
+                    }
                 }
+            // else if we have only one char left
             }else {
                 fprintf(stdout, " %02x", c);
-                octet++;
-                nbSpace = 40-((octet%16)*2 + ((octet/16)));
+                nbSpace = 40 - (((octet+1)%16)*2 + ((octet+1)%16)%2 + ((octet+1)%16)/2);
                 for (int i=0; i<nbSpace; i++) {
                     fprintf(stdout, " ");
                 }
@@ -55,23 +57,15 @@ void writeOnFich(FILE *f_entree)
                 }else { 
                     tab[octet%16] = '.';
                 };
-
+                octet++;
                 fprintf(stdout, "  %s\n", tab);
-                for (int i=0; i<=15; i++){
-                    tab[i] = 0;
-                }
             }
         }
-        if((c=fgetc(f_entree)) == EOF && (tab[1] != 0) && (tab[2] != 0)) {
+        // if the the EOF is when you haven't start a group of two octets
+        if (octet%2 == 0 && octet%16 != 0) {
             nbSpace = 40-(((octet%16)*2)+((octet%16)/2));
-            
             for (int i=0; i<nbSpace; i++) {
                 fprintf(stdout, " ");
-            }
-            if (isprint(c) != 0) {
-                tab[octet%16] = c;
-            }else {
-                tab[octet%16] = '.';
             }
             fprintf(stdout, "  %s\n", tab);
         }
