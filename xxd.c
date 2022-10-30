@@ -12,8 +12,28 @@ void writeOnFich(FILE *f_entree)
     char *tab = malloc(16*sizeof(char));
     bool startLine=true;
     if (f_entree == stdin) {
-        // TODO: read from stdin and write to stdout when octet%16 == 0
-        printf("TODO: stdin xxd\n");
+        while(true){
+            if (octet%16==0 && octet != 0) {
+                fprintf(stdout, "%08x: %02x%02x %02x%02x %02x%02x %02x%02x" 
+                    " %02x%02x %02x%02x %02x%02x %02x%02x", octet-16,
+                    tab[0], tab[1], tab[2], tab[3], tab[4], tab[5], tab[6],
+                    tab[7], tab[8], tab[9], tab[10], tab[11], tab[12],
+                    tab[13], tab[14], tab[15]);
+                for (int i=0; i<16; i++) {
+                    if (!(isprint(tab[i]) !=0)) {
+                        tab[i]='.';
+                    }
+                }
+                fprintf(stdout, "  %s\n", tab);
+                for (int i=0; i<16; i++) {
+                    tab[i]=0;
+                }
+            }
+            if((c = fgetc(f_entree)) != EOF){
+                tab[octet%16]=c;
+                octet++;
+            } 
+        }
     }else {
         while ((c = fgetc(f_entree)) != EOF) {
             // if we are at the beginning of a line
