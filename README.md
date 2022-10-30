@@ -22,6 +22,8 @@
 
 **Le programme doit prendre le nom du fichier à afficher sur sa ligne de commande. Si aucun nom de fichier n'est donné, le programme doit lire les données sur son entrée standard.**
 
-26/10/2022 - xx/xx/2022
+26/10/2022 - 31/10/2022
+
+(optimisation pouvant être faite sur le code pour afficher le contenu d'un fichier prédéfini en hexadécimal et en texte. Mais code fonctionnel)
 
 ---
