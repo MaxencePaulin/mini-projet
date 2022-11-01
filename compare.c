@@ -19,6 +19,10 @@ int compare(char *A, char *B, char *C)
     // retourner 0 si les fichiers sont identiques
     // retourner 1 sinon
     int foC = mkstemp(C);
+    if (foC == -1) {
+        perror("mkstemp");
+        return 1;
+    }
     pid_t fils;
     fils = fork();
     if (fils == 0) {
@@ -66,8 +70,8 @@ int main(int argc, char *argv[])
     }
     commande2[j] = NULL;
     // create two fich and open it with the mkstemp function without core dumped
-    char fichierA[] = "/tmp/exo2/myTmpFileA-XXXXXX";
-    char fichierB[] = "/tmp/exo2/myTmpFileB-XXXXXX";
+    char fichierA[] = "/tmp/commande1A-XXXXXX";
+    char fichierB[] = "/tmp/commande2B-XXXXXX";
     int fdA = mkstemp(fichierA);
     int fdB = mkstemp(fichierB);
     if (fdA == -1 || fdB == -1) {
@@ -109,22 +113,27 @@ int main(int argc, char *argv[])
         return 2;
     }
     // compare
-    char fichierC[] = "/tmp/myTmpFilec-XXXXXX";
+    char fichierC[] = "/tmp/diffC-XXXXXX";
     if ((compare(fichierA, fichierB, fichierC) == 0)) {
         printf("Les fichiers sont identiques\n");
     } else {
         printf("Les fichiers sont differents : \n");
-        execlp("cat", "cat", fichierC, NULL);
+        if (fork() == 0) {
+            execlp("cat", "cat", fichierC, NULL);
+            perror("execlp");
+            return 2;
+        }
+        attente();
     }
     // delete fich A and fich B
-    // if (remove(fichierA) == -1 || remove(fichierB) == -1) {
-    //     perror("remove");
-    //     return 2;
-    // }
+    if (remove(fichierA) == -1 || remove(fichierB) == -1 || remove(fichierC) == -1) {
+        perror("remove");
+        return 2;
+    }
     // if you want delete with a fork =>
     // pid_t pid3 = fork();
     // if (pid3 == 0) {
-    //     execlp("rm", "rm", fichierA, fichierB, NULL);
+    //     execlp("rm", "rm", fichierA, fichierB, fichierC, NULL);
     //     perror("execlp");
     //     return 2;
     // }
