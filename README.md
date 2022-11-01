@@ -4,11 +4,7 @@
 
 ---
 
-### <u>Initialisation du projet</u>
-
----
-
-### Création d'une commande xxd pour afficher le contenu d'un fichier en hexadécimal et en texte
+## Création d'une commande xxd pour afficher le contenu d'un fichier en hexadécimal et en texte
 
 **Chaque ligne est composée de :**
 
@@ -24,6 +20,20 @@
 
 26/10/2022 - 31/10/2022
 
-(optimisation pouvant être faite sur le code pour afficher le contenu d'un fichier prédéfini en hexadécimal et en texte. Mais code fonctionnel)
+---
+
+## Création d'un programme permettant de comparer les deux sorties de deux programme différents
+
+**Ce programme doit fonctionner de la manière suivante :**
+
+- **créer un processus pour exécuter la commande1 avec ses arguments, en redirigeant sa sortie standard dans un fichier A**
+
+- **créer un processus pour exécuter la commande2 avec ses arguments, en redirigeant sa sortie standard dans un fichier B**
+
+- **exécuter la commande « diff -u » pour comparer les fichiers A et B et afficher les différences s'il y en a.**
+
+**Le programme doit se terminer avec le code de retour 0 si les sorties sont identiques, 1 si elles sont différentes, et 2 pour toute autre erreur.**
+
+01/11/2022 - xx/11/2022
 
 ---
