@@ -13,20 +13,33 @@ void attente()
     } while (fils != -1);
 }
 
-int compare(char *A, char *B)
+int compare(char *A, char *B, char *C)
 {
     // comparer avec diff -u les fichiers A et B
     // retourner 0 si les fichiers sont identiques
     // retourner 1 sinon
+    int foC = mkstemp(C);
     pid_t fils;
     fils = fork();
     if (fils == 0) {
+        dup2(foC, 1);
         execlp("diff", "diff", "-u", A,B, NULL);
         perror("execlp");
         return 2;
     }
     attente();
-    return 0;
+    close(foC);
+    FILE *fC = fopen(C, "r");
+    char ch;
+    int i = 0;
+    while ((ch = fgetc(fC)) != EOF && i < 3) {
+        i++;
+    }
+    fclose(fC);
+    if (i == 0) {
+        return 0;
+    }
+    return 1;
 }
 
 int main(int argc, char *argv[])
@@ -71,7 +84,6 @@ int main(int argc, char *argv[])
     if (pid == 0) {
         // the son exec commande 1
         if ((pid2 = fork()) == 0) {
-            close(fdA);
             close(fdB);
             dup2(fdA, 1);
             execvp(commande1[0], commande1);
@@ -79,7 +91,6 @@ int main(int argc, char *argv[])
             return 2;
         }
         close(fdA);
-        close(fdB);
         dup2(fdB, 1);
         execvp(commande2[0], commande2);
         perror("execvp");
@@ -98,16 +109,18 @@ int main(int argc, char *argv[])
         return 2;
     }
     // compare
-    if ((compare(fichierA, fichierB) == 0)) {
+    char fichierC[] = "/tmp/myTmpFilec-XXXXXX";
+    if ((compare(fichierA, fichierB, fichierC) == 0)) {
         printf("Les fichiers sont identiques\n");
     } else {
-        printf("Les fichiers sont differents\n");
+        printf("Les fichiers sont differents : \n");
+        execlp("cat", "cat", fichierC, NULL);
     }
     // delete fich A and fich B
-    if (remove(fichierA) == -1 || remove(fichierB) == -1) {
-        perror("remove");
-        return 2;
-    }
+    // if (remove(fichierA) == -1 || remove(fichierB) == -1) {
+    //     perror("remove");
+    //     return 2;
+    // }
     // if you want delete with a fork =>
     // pid_t pid3 = fork();
     // if (pid3 == 0) {
