@@ -148,14 +148,12 @@ int main(int argc, char *argv[])
             if ((deleteFich(fichierA, fichierB) != 0)) {
                 return 2;
             };  
-            fprintf(stdout, "La sortie des deux programmes est identiques\n");
             break;
         case 1:
             res = 1;
             if ((deleteFich(fichierA, fichierB) != 0)) {
                 return 2;
             };
-            fprintf(stdout, "La sortie des deux programmes est differente (différences ci-dessus)\n");
             break;
         default:
             res = 2;

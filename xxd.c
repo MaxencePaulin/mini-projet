@@ -10,27 +10,32 @@ void writeOnFich(FILE *f_entree)
     int octet=0;
     int nbSpace=0;
     char *tab = malloc(16*sizeof(char));
+    int *tab2 = malloc(16*sizeof(int));
     bool startLine=true;
     if (f_entree == stdin) {
+        printf("\n>>>%d<<<\n", tab2[5]);
         while(true){
             if (octet%16==0 && octet != 0) {
                 fprintf(stdout, "%08x: %02x%02x %02x%02x %02x%02x %02x%02x" 
                     " %02x%02x %02x%02x %02x%02x %02x%02x", octet-16,
-                    tab[0], tab[1], tab[2], tab[3], tab[4], tab[5], tab[6],
-                    tab[7], tab[8], tab[9], tab[10], tab[11], tab[12],
-                    tab[13], tab[14], tab[15]);
+                    tab2[0], tab2[1], tab2[2], tab2[3], tab2[4], tab2[5], tab2[6],
+                    tab2[7], tab2[8], tab2[9], tab2[10], tab2[11], tab2[12],
+                    tab2[13], tab2[14], tab2[15]);
                 for (int i=0; i<16; i++) {
-                    if (!(isprint(tab[i]) !=0)) {
+                    if (!(isprint(tab2[i]) !=0)) {
                         tab[i]='.';
+                    }else{
+                        tab[i]=tab2[i];
                     }
                 }
                 fprintf(stdout, "  %s\n", tab);
                 for (int i=0; i<16; i++) {
                     tab[i]=0;
+                    tab2[i]=0;
                 }
             }
             if((c = fgetc(f_entree)) != EOF){
-                tab[octet%16]=c;
+                tab2[octet%16]=c;
                 octet++;
             } 
         }
