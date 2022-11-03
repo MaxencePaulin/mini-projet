@@ -62,6 +62,10 @@ int main(int argc, char *argv[])
     while (strcmp(argv[i], "--") != 0) {
         commande1[i-1] = argv[i];
         i++;
+        if (i == argc) {
+            fprintf(stderr, "Usage: %s commande1 [arguments...] -- commande2 [arguments...]\n", argv[0]);
+            return 2;
+        }
     }
     commande1[i-1] = NULL;
     i++;
@@ -92,8 +96,14 @@ int main(int argc, char *argv[])
     if (pid == 0) {
         // the son of son exec commande 1
         if ((pid2 = fork()) == 0) {
-            close(fdB);
-            dup2(fdA, 1);
+            if (close(fdB) == -1) {
+                perror("close");
+                return 2;
+            }
+            if (dup2(fdA, STDOUT_FILENO) == -1) {
+                perror("dup2");
+                return 2;
+            }
             execvp(commande1[0], commande1);
             perror("execvp");
             return 2;
@@ -103,15 +113,23 @@ int main(int argc, char *argv[])
             return 2;
         }
         // the son exec commande 2
-        close(fdA);
-        dup2(fdB, 1);
+        if (close(fdA) == -1) {
+            perror("close");
+            return 2;
+        }
+        if (dup2(fdB, STDOUT_FILENO) == -1) {
+            perror("dup2");
+            return 2;
+        }
         execvp(commande2[0], commande2);
         perror("execvp");
         return 2;
     }
     // close fich A and fich B openned with mkstemp
-    close(fdA);
-    close(fdB);
+    if (close(fdA) == -1 || close(fdB) == -1) {
+        perror("close");
+        return 2;
+    }
     // wait the son if they are finish without error
     if (attente() == 2) {
         if ((deleteFich(fichierA, fichierB) != 0)) {
@@ -123,11 +141,11 @@ int main(int argc, char *argv[])
     int res;
     switch (compare(fichierA, fichierB)) {
         case 0:
-            fprintf(stdout, "Les sorties des programmes sont identiques\n");
+            fprintf(stdout, "La sortie des deux programmes est identiques\n");
             res = 0;
             break;
         case 1:
-            fprintf(stdout, "Les sorties des programmes sont differents (différences ci-dessus)\n");
+            fprintf(stdout, "La sortie des deux programmes est differente (différences ci-dessus)\n");
             res = 1;
             break;
         default:
