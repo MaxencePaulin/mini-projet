@@ -34,6 +34,22 @@
 
 **Le programme doit se terminer avec le code de retour 0 si les sorties sont identiques, 1 si elles sont différentes, et 2 pour toute autre erreur.**
 
-01/11/2022 - 07/11/2022
+01/11/2022 - 05/11/2022
+
+---
+
+## Création d'un rapport du mini-projet
+
+**Le projet doit être accompagné d'un court rapport qui doit :**
+
+- **décrire les point forts et les faiblesses de chacun des programmes**
+
+- **indiquer, pour les entrées-sorties, quelle interface a été utilisée (haut-niveau ou bas-niveau)**
+
+- **expliquer comment sont exécutées les différentes commandes dans le deuxième exercice**
+
+- **décrire comment le programme du deuxième exercice peut être utilisé pour vérifier le programme du premier exercice.**
+
+05/11/2022 - 08/11/2022
 
 ---

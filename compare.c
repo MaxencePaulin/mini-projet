@@ -119,11 +119,11 @@ int main(int argc, char *argv[])
     int res;
     switch (compare(fichierA, fichierB)) {
         case 0:
-            printf("Les fichiers sont identiques\n");
+            printf("Les sorties des programmes sont identiques\n");
             res = 0;
             break;
         case 1:
-            printf("Les fichiers sont differents (différences ci-dessus)\n");
+            printf("Les sorties des programmes sont differents (différences ci-dessus)\n");
             res = 1;
             break;
         default:
