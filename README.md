@@ -34,6 +34,6 @@
 
 **Le programme doit se terminer avec le code de retour 0 si les sorties sont identiques, 1 si elles sont différentes, et 2 pour toute autre erreur.**
 
-01/11/2022 - xx/11/2022
+01/11/2022 - 07/11/2022
 
 ---
