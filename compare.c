@@ -98,6 +98,10 @@ int main(int argc, char *argv[])
             perror("execvp");
             return 2;
         }
+        // wait the son of son and return if exit status is 2
+        if (attente() == 2) {  
+            return 2;
+        }
         // the son exec commande 2
         close(fdA);
         dup2(fdB, 1);
@@ -105,25 +109,25 @@ int main(int argc, char *argv[])
         perror("execvp");
         return 2;
     }
-    // wait the son and the son of son if they are finish without error
-    if (attente() > 1) {
+    // close fich A and fich B openned with mkstemp
+    close(fdA);
+    close(fdB);
+    // wait the son if they are finish without error
+    if (attente() == 2) {
         if ((deleteFich(fichierA, fichierB) != 0)) {
             perror("deleteFich");
         };        
         return 2;
     }
-    // close fich A and fich B openned with mkstemp
-    close(fdA);
-    close(fdB);
     // compare fich A and fich B
     int res;
     switch (compare(fichierA, fichierB)) {
         case 0:
-            printf("Les sorties des programmes sont identiques\n");
+            fprintf(stdout, "Les sorties des programmes sont identiques\n");
             res = 0;
             break;
         case 1:
-            printf("Les sorties des programmes sont differents (différences ci-dessus)\n");
+            fprintf(stdout, "Les sorties des programmes sont differents (différences ci-dessus)\n");
             res = 1;
             break;
         default:
