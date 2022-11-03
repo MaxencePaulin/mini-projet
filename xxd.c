@@ -9,7 +9,11 @@ void writeOnFich(FILE *f_entree)
     int c2;
     int octet=0;
     int nbSpace=0;
-    char *tab = malloc(16*sizeof(char));
+    // for fix error in valgrind: Invalid read of size 1
+    char *tab = malloc(16*sizeof(char)+1);
+    // for fix error in valgrind: Conditional jump or move depends on uninitialised value(s)
+    tab[16]='\0';
+    tab[15]=0;
     int *tab2 = malloc(16*sizeof(int));
     bool startLine=true;
     if (f_entree == stdin) {
