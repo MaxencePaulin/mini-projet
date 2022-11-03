@@ -13,7 +13,6 @@ void writeOnFich(FILE *f_entree)
     int *tab2 = malloc(16*sizeof(int));
     bool startLine=true;
     if (f_entree == stdin) {
-        printf("\n>>>%d<<<\n", tab2[5]);
         while(true){
             if (octet%16==0 && octet != 0) {
                 fprintf(stdout, "%08x: %02x%02x %02x%02x %02x%02x %02x%02x" 
