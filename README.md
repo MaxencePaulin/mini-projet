@@ -53,3 +53,5 @@
 05/11/2022 - 08/11/2022
 
 ---
+
+A temps perdu, amélioration faites, s'aider de valgrind, gestion d'erreur, etc...
