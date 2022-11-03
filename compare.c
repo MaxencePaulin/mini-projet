@@ -42,6 +42,7 @@ int compare(char *A, char *B)
     pid_t fils;
     fils = fork();
     if (fils == 0) {
+        // execute diff -u A B for compare
         execlp("diff", "diff", "-u", A, B, NULL);
         perror("execlp");
         return 2;
@@ -56,13 +57,14 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Usage: %s commande1 [arguments...] -- commande2 [arguments...]\n", argv[0]);
         return 2;
     }
-    /* Lecture des arguments */
+    /* Read arguments */
     int i = 1;
     char *commande1[argc];
     while (strcmp(argv[i], "--") != 0) {
         commande1[i-1] = argv[i];
         i++;
         if (i >= argc) {
+            // if there is no -- in the arguments
             fprintf(stderr, "Usage: %s commande1 [arguments...] -- commande2 [arguments...]\n", argv[0]);
             return 2;
         }
