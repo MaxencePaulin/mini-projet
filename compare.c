@@ -4,46 +4,50 @@
 #include <string.h>
 #include <sys/wait.h>
 
-void attente()
+int deleteFich(char *cheminA, char *cheminB){
+    // delete fich A and fich B
+    if (remove(cheminA) == -1 || remove(cheminB) == -1) {
+        perror("remove");
+        return 2;
+    }
+    return 0;
+    // if you want delete with a fork =>
+    // pid_t pid3 = fork();
+    // if (pid3 == 0) {
+    //     execlp("rm", "rm", fichierA, fichierB, NULL);
+    //     perror("execlp");
+    //     return 2;
+    // }
+    // return attente();
+    //
+}
+
+int attente()
 {
     int status;
     pid_t fils;
     do {
         fils = wait(&status);
+        if (fils == -1) {
+            if (WIFEXITED(status)) {
+                return WEXITSTATUS(status);
+            }
+        }
     } while (fils != -1);
+    return 0;
 }
 
-int compare(char *A, char *B, char *C)
+int compare(char *A, char *B)
 {
-    // comparer avec diff -u les fichiers A et B
-    // retourner 0 si les fichiers sont identiques
-    // retourner 1 sinon
-    int foC = mkstemp(C);
-    if (foC == -1) {
-        perror("mkstemp");
-        return 1;
-    }
     pid_t fils;
     fils = fork();
     if (fils == 0) {
-        dup2(foC, 1);
-        execlp("diff", "diff", "-u", A,B, NULL);
+        execlp("diff", "diff", "-u", A, B, NULL);
         perror("execlp");
         return 2;
     }
-    attente();
-    close(foC);
-    FILE *fC = fopen(C, "r");
-    char ch;
-    int i = 0;
-    while ((ch = fgetc(fC)) != EOF && i < 3) {
-        i++;
-    }
-    fclose(fC);
-    if (i == 0) {
-        return 0;
-    }
-    return 1;
+    // return value of WEXITSTATUS in attente()
+    return attente();
 }
 
 int main(int argc, char *argv[])
@@ -86,7 +90,7 @@ int main(int argc, char *argv[])
         return 2;
     }
     if (pid == 0) {
-        // the son exec commande 1
+        // the son of son exec commande 1
         if ((pid2 = fork()) == 0) {
             close(fdB);
             dup2(fdA, 1);
@@ -94,49 +98,41 @@ int main(int argc, char *argv[])
             perror("execvp");
             return 2;
         }
+        // the son exec commande 2
         close(fdA);
         dup2(fdB, 1);
         execvp(commande2[0], commande2);
         perror("execvp");
         return 2;
     }
-    // wait the son
-    attente();
-    // close fich A and fich B
+    // wait the son and the son of son if they are finish without error
+    if (attente() > 1) {
+        if ((deleteFich(fichierA, fichierB) != 0)) {
+            perror("deleteFich");
+        };        
+        return 2;
+    }
+    // close fich A and fich B openned with mkstemp
     close(fdA);
     close(fdB);
-    // open fich A and fich B
-    FILE *foA = fopen(fichierA, "r");
-    FILE *foB = fopen(fichierB, "r");
-    if (foA == NULL || foB == NULL) {
-        perror("fopen");
+    // compare fich A and fich B
+    int res;
+    switch (compare(fichierA, fichierB)) {
+        case 0:
+            printf("Les fichiers sont identiques\n");
+            res = 0;
+            break;
+        case 1:
+            printf("Les fichiers sont differents (différences ci-dessus)\n");
+            res = 1;
+            break;
+        default:
+            res = 2;
+            break;
+    }
+    if ((deleteFich(fichierA, fichierB) != 0)) {
+        perror("deleteFich");
         return 2;
-    }
-    // compare
-    char fichierC[] = "/tmp/diffC-XXXXXX";
-    if ((compare(fichierA, fichierB, fichierC) == 0)) {
-        printf("Les fichiers sont identiques\n");
-    } else {
-        printf("Les fichiers sont differents : \n");
-        if (fork() == 0) {
-            execlp("cat", "cat", fichierC, NULL);
-            perror("execlp");
-            return 2;
-        }
-        attente();
-    }
-    // delete fich A and fich B
-    if (remove(fichierA) == -1 || remove(fichierB) == -1 || remove(fichierC) == -1) {
-        perror("remove");
-        return 2;
-    }
-    // if you want delete with a fork =>
-    // pid_t pid3 = fork();
-    // if (pid3 == 0) {
-    //     execlp("rm", "rm", fichierA, fichierB, fichierC, NULL);
-    //     perror("execlp");
-    //     return 2;
-    // }
-    // attente();
-    return 0;
+    };
+    return res;
 }
