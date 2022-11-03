@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     while (strcmp(argv[i], "--") != 0) {
         commande1[i-1] = argv[i];
         i++;
-        if (i == argc) {
+        if (i >= argc) {
             fprintf(stderr, "Usage: %s commande1 [arguments...] -- commande2 [arguments...]\n", argv[0]);
             return 2;
         }
@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
     int fdB = mkstemp(fichierB);
     if (fdA == -1 || fdB == -1) {
         perror("mkstemp");
+        deleteFich(fichierA, fichierB);
         return 2;
     }
     // create two process
@@ -91,6 +92,7 @@ int main(int argc, char *argv[])
     pid_t pid2;
     if (pid == -1) {
         perror("fork");
+        deleteFich(fichierA, fichierB);
         return 2;
     }
     if (pid == 0) {
@@ -128,33 +130,38 @@ int main(int argc, char *argv[])
     // close fich A and fich B openned with mkstemp
     if (close(fdA) == -1 || close(fdB) == -1) {
         perror("close");
+        deleteFich(fichierA, fichierB);
         return 2;
     }
     // wait the son if they are finish without error
     if (attente() == 2) {
-        if ((deleteFich(fichierA, fichierB) != 0)) {
-            perror("deleteFich");
-        };        
+        deleteFich(fichierA, fichierB);
         return 2;
     }
     // compare fich A and fich B
     int res;
     switch (compare(fichierA, fichierB)) {
         case 0:
-            fprintf(stdout, "La sortie des deux programmes est identiques\n");
             res = 0;
+            if ((deleteFich(fichierA, fichierB) != 0)) {
+                return 2;
+            };  
+            fprintf(stdout, "La sortie des deux programmes est identiques\n");
             break;
         case 1:
-            fprintf(stdout, "La sortie des deux programmes est differente (différences ci-dessus)\n");
             res = 1;
+            if ((deleteFich(fichierA, fichierB) != 0)) {
+                return 2;
+            };
+            fprintf(stdout, "La sortie des deux programmes est differente (différences ci-dessus)\n");
             break;
         default:
             res = 2;
+            if ((deleteFich(fichierA, fichierB) != 0)) {
+                return 2;
+            };
+            fprintf(stderr, "Erreur lors de la comparaison des fichiers\n");
             break;
     }
-    if ((deleteFich(fichierA, fichierB) != 0)) {
-        perror("deleteFich");
-        return 2;
-    };
     return res;
 }
