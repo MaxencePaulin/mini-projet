@@ -99,17 +99,23 @@ int main(int argc, char *argv[])
     }
     if (pid == 0) {
         // the son of son exec commande 1
-        if ((pid2 = fork()) == 0) {
+        pid2 = fork();
+        if (pid2 == -1) {
+            perror("fork");
+            deleteFich(fichierA, fichierB);
+            return 2;
+        }
+        if (pid2 == 0) {
             if (close(fdB) == -1) {
-                perror("close");
+                perror("close (fileB)");
                 return 2;
             }
             if (dup2(fdA, STDOUT_FILENO) == -1) {
-                perror("dup2");
+                perror("dup2 (commande1)");
                 return 2;
             }
             execvp(commande1[0], commande1);
-            perror("execvp");
+            perror("execvp (commande1)");
             return 2;
         }
         // wait the son of son and return if exit status is 2
@@ -118,15 +124,15 @@ int main(int argc, char *argv[])
         }
         // the son exec commande 2
         if (close(fdA) == -1) {
-            perror("close");
+            perror("close (fileA)");
             return 2;
         }
         if (dup2(fdB, STDOUT_FILENO) == -1) {
-            perror("dup2");
+            perror("dup2 (commande2)");
             return 2;
         }
         execvp(commande2[0], commande2);
-        perror("execvp");
+        perror("execvp (commande2)");
         return 2;
     }
     // close fich A and fich B openned with mkstemp
