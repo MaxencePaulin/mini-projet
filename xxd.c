@@ -14,9 +14,9 @@ void writeOnFich(FILE *f_entree)
     // for fix error in valgrind: Conditional jump or move depends on uninitialised value(s)
     tab[16]='\0';
     tab[15]=0;
-    int *tab2 = malloc(16*sizeof(int));
     bool startLine=true;
     if (f_entree == stdin) {
+        int *tab2 = malloc(16*sizeof(int));
         while(true){
             if (octet%16==0 && octet != 0) {
                 fprintf(stdout, "%08x: %02x%02x %02x%02x %02x%02x %02x%02x" 
@@ -40,7 +40,7 @@ void writeOnFich(FILE *f_entree)
             if((c = fgetc(f_entree)) != EOF){
                 tab2[octet%16]=c;
                 octet++;
-            } 
+            }
         }
     }else {
         while ((c = fgetc(f_entree)) != EOF) {
@@ -98,6 +98,8 @@ void writeOnFich(FILE *f_entree)
             fprintf(stdout, "  %s\n", tab);
         }
     }
+    // free memory allocated in tab of char
+    free(tab);
 }
 
 int main(int argc, char *argv[])
