@@ -1,4 +1,4 @@
-## Initialisation du mini-projet en language C sur github
+## Initialisation du mini-projet en langage C sur github
 
 26/10/2022
 
@@ -22,7 +22,7 @@
 
 ---
 
-## Création d'un programme permettant de comparer les deux sorties de deux programme différents
+## Création d'un programme permettant de comparer les deux sorties de deux programmes différents
 
 **Ce programme doit fonctionner de la manière suivante :**
 
@@ -54,4 +54,4 @@
 
 ---
 
-Sans dates précises: amélioration faites, s'aider de valgrind, gestion d'erreur, etc...
+Sans dates précises : améliorations faites, s'aider de Valgrind, gestion d'erreur, etc.
